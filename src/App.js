@@ -4,7 +4,7 @@ import React, { useState, useEffect, useMemo } from "react";
 import TodoForm from "./components/TodoForm";
 import TodoList from "./components/TodoList";
 import SearchIcon from "@material-ui/icons/Search";
-import { Paper, Grid, InputBase } from "@material-ui/core";
+import { Paper, Grid, InputBase, Button } from "@material-ui/core";
 
 const App = () => {
   const styles = {
@@ -27,13 +27,9 @@ const App = () => {
       borderRadius: 10,
     },
     searchIcon: {
-      margin: "10px auto auto",
-      padding: "10px",
-      display: "flex",
-      height: "100%",
-      pointerEvents: "none",
-      alignItems: "center",
-      justifyContent: "center",
+      position: 'fixed',
+      top: 20 ,
+      left:900,
     },
   };
   const [globalTodoList, setGlobalTodList] = useState([]);
@@ -43,35 +39,26 @@ const App = () => {
   const handleChange = (e) => {
     setSearch(e.target.value);
   };
-  function debounce(value, timeout = 500) {
-    let timer;
-    
-      //clearTimeout(timer);
-      timer = setTimeout(() => {
-      }, timeout);
+  const handleSearch=async()=>{
+    console.log('lala')
+      const res = await axios.get(
+         `http://localhost:3333/api/todos?search=${search}`
+       );
+       setGlobalTodList(res.data);
+       setSearch('')
   }
-
-  const processChange =()=>debounce();
-  //http://localhost:3333/api/todos?search=”mem”
   const getData = async () => {
     try {
-      let res;
-      if (search !== "") {
-        res = await axios.get(
-          `http://localhost:3333/api/todos?search=${search}`
-        );
-      } else {
-        res = await axios.get("http://localhost:3333/api/todos");
-      }
+      
+        const res = await axios.get("http://localhost:3333/api/todos");
       setGlobalTodList(res.data);
     } catch (e) {
       console.log(e);
     }
   };
   useEffect(() => {
-    processChange()
     getData();
-  }, [reload,search]);
+  }, [reload]);
 
   const addToList = (todo) => {
     setGlobalTodList([...globalTodoList, todo]);
@@ -80,11 +67,10 @@ const App = () => {
     <>
       <Grid container spacing={0}>
         <Grid item xs={12}>
-          <div className={styles.searchIcon}>
-            <SearchIcon />
-          </div>
+            <Button   style={styles.searchIcon} variant="contained" color="primary" onClick={()=>{handleSearch()}}>
+              Search
+            </Button>
           <InputBase
-            placeholder="Search…"
             style={styles.search}
             inputProps={{ "aria-label": "search" }}
             value={search}
