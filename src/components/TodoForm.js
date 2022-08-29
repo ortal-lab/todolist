@@ -22,8 +22,8 @@ const TodoForm = ({ addToList, globalTodoList }) => {
     } catch (error) {
       alert(error);
     }
-    e.currentTarget.reset();
-  };
+    inputRef.current.value = ""
+    };
   return (
     <form onSubmit={handleSubmit} style={{ display: "flex" }}>
       
